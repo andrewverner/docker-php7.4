@@ -1,32 +1,46 @@
-version: '3'
+version: '3.5'
+
+networks:
+  app_network:
+    name: app_network
+    driver: bridge
 
 services:
 
   php:
+    container_name: esi_php
     build:
       context: ./php
+    networks:
+      - app_network
     ports:
-      - 9000:9000
+      - "9000:9000"
     volumes:
-      - ../src:/app
+      - ../app:/app
     environment:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
 
   nginx:
+    container_name: esi_nginx
     image: nginx:latest
+    networks:
+      - app_network
     ports:
-      - 80:80
+      - ${HTTP_PORT:-80}:80
     volumes:
-      - ../src:/app
+      - ../app:/app
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - php
 
   mysql:
+    container_name: esi_mysql
     image: mysql:5.7
+    networks:
+      - app_network
     ports:
-      - 3306:3306
+      - ${MYSQL_PORT:-3306}:3306
     volumes:
       - ./mysql:/var/lib/mysql
     depends_on:
