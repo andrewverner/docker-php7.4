@@ -14,7 +14,7 @@ services:
     networks:
       - app_network
     ports:
-      - "9000:9000"
+      - ${PHP_PORT:-9000}:9000
     volumes:
       - ./${SOURCE_DIRECTORY_NAME}:/app
     environment:
@@ -50,3 +50,13 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+
+  redis:
+    container_name: ${REDIS_CONTAINER_NAME}
+    image: redis:latest
+    networks:
+      - app_network
+    ports:
+      - ${REDIS_PORT:-6379}:6379
+    environment:
+      - REDIS_REPLICATION_MODE=master
